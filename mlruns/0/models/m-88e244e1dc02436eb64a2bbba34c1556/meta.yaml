@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/M%20Fathurrahman/Documents/LASKAR%20AI/Workflow-CI/mlruns/0/models/m-88e244e1dc02436eb64a2bbba34c1556/artifacts
+creation_timestamp: 1750341096364
+experiment_id: '0'
+last_updated_timestamp: 1750341104808
+model_id: m-88e244e1dc02436eb64a2bbba34c1556
+model_type: null
+name: best_random_forest_model_tuned
+source_run_id: 253dae69cf564f88b189739fbf49ef16
+status: 2
+status_message: null
