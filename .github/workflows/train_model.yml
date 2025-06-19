@@ -24,16 +24,13 @@ jobs:
         auto-activate-base: false
         auto-update-conda: true
         environment-file: MLProject/conda.yaml
-        # No need for 'activate-environment' here as we'll activate manually in the next step
-        # activate-environment: personality-ml-env
+        # Explicitly activate the environment after it's set up
+        activate-environment: personality-ml-env
 
     - name: Run MLflow Project
       run: |
-        # Initialize Conda in the current shell session
-        source $(conda info --base)/etc/profile.d/conda.sh
-        # Activate the specific Conda environment
-        conda activate personality-ml-env
-        # Now run mlflow using the activated environment's python
+        # The environment should already be active due to 'activate-environment' above.
+        # Use 'python -m mlflow' to explicitly run the mlflow module for robustness.
         python -m mlflow run MLProject --no-conda
       env:
         MLFLOW_TRACKING_URI: ./mlruns
