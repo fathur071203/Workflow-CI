@@ -3,40 +3,64 @@ name: CI - Train ML Model
 on:
   push:
     branches:
-      - main
+      - main # Pastikan ini nama branch utama repositori Workflow-CI Anda (misal: 'main')
     paths:
-      - 'MLProject/**'
-      - '!MLProject/personality_preprocessing/**'
+      - 'MLProject/**' # Trigger jika ada perubahan di dalam folder MLProject
+      - '!MLProject/personality_preprocessing/**' # Kecualikan perubahan di data preprocessing
 
 jobs:
   train_model_job:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Lingkungan virtual tempat job akan berjalan
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4 # Mengambil kode dari repositori
 
     - name: Set up Conda Environment
+      # Menggunakan actions ini untuk setup Conda di GitHub Actions runner
       uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: 3.10.16
+        python-version: 3.10.16 # Sesuaikan dengan versi Python Anda (yang kompatibel dengan model)
         conda-tools-version: latest
-        auto-activate-base: false
+        auto-activate-base: false # Penting: Jangan otomatis mengaktifkan base env
         auto-update-conda: true
-        environment-file: MLProject/conda.yaml
-        # Explicitly activate the environment after it's set up
-        activate-environment: personality-ml-env
+        environment-file: MLProject/conda.yaml # Tentukan path ke conda.yaml Anda
+        # Hapus 'activate-environment' di sini; aktivasi akan dilakukan secara manual untuk lebih robust
+        # activate-environment: personality-ml-env
 
     - name: Run MLflow Project
+      # Gunakan login shell (-l) agar script inisialisasi Conda (dari conda init) dijalankan
+      shell: bash -l {0}
       run: |
-        # The environment should already be active due to 'activate-environment' above.
-        # Use 'python -m mlflow' to explicitly run the mlflow module for robustness.
+        echo "Verifying Conda environment existence..."
+        # Periksa apakah environment ada sebelum mencoba mengaktifkannya
+        if ! conda info --envs | grep -q "personality-ml-env"; then
+          echo "Error: Conda environment 'personality-ml-env' not found. Please check the 'Set up Conda Environment' step for creation issues."
+          exit 1
+        fi
+        
+        echo "Activating Conda environment 'personality-ml-env'..."
+        # Aktifkan environment Conda
+        conda activate personality-ml-env
+        
+        echo "Verifying Python interpreter and mlflow module after activation..."
+        # Verifikasi path Python yang aktif
+        which python
+        # Verifikasi apakah modul mlflow dapat ditemukan di Python yang aktif
+        python -c "import mlflow; print('mlflow module found and imported successfully!')" || \
+          { echo "Error: 'mlflow' module not found or could not be imported in the activated environment."; exit 1; }
+
+        echo "Running MLflow Project..."
+        # Jalankan MLflow Project menggunakan python -m mlflow untuk robustnes
         python -m mlflow run MLProject --no-conda
       env:
+        # MLFLOW_TRACKING_URI: ./mlruns akan membuat folder mlruns/ di root repo CI ini
+        # Ini adalah setup default untuk tracking lokal di runner Actions
         MLFLOW_TRACKING_URI: ./mlruns
-        # If you are using DagsHub, uncomment these lines:
+        # Jika Anda melakukan Advance (dengan DagsHub), Anda perlu menambahkan ini:
         # MLFLOW_TRACKING_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
         # MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
+
 
     - name: Configure Git for Commit MLflow Runs
       run: |
@@ -44,7 +68,9 @@ jobs:
         git config --global user.name "GitHub Actions"
 
     - name: Commit MLflow Local Runs (untuk Kriteria 3 Basic/Skilled, menyimpan artefak di GitHub)
+      # Ini akan meng-commit folder mlruns yang berisi hasil tracking
       run: |
+        # Periksa apakah ada perubahan di folder mlruns sebelum di-add/commit
         if git diff --exit-code --quiet mlruns/; then
           echo "No new MLflow runs or changes to commit."
         else
@@ -53,4 +79,4 @@ jobs:
           git push origin master # Sesuaikan dengan branch utama Anda
         fi
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token otomatis dari GitHub Actions
