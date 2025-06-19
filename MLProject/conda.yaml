@@ -21,4 +21,4 @@ dependencies:
       - pydantic<2.0.0 # Tambahkan jika Anda mengalami masalah pydantic sebelumnya
       - pydantic-core # Diperlukan oleh pydantic, tapi versi spesifiknya tergantung pada pydantic
       # Anda bisa mendapatkan daftar lengkap dengan `pip freeze > requirements.txt` di environment lokal yang bersih
-      # dan kemudian menyalinnya ke sini, menyesuaikan formatnya.
+      # dan kemudian menyalinnya ke sini, menyesuasikan formatnya.
