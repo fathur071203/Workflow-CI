@@ -16,7 +16,7 @@ dependencies:
       - mlflow # Pastikan versi mlflow yang Anda gunakan
       - joblib # Untuk menyimpan models
       - dagshub # Diperlukan untuk Level Advance jika akan ke Kriteria 3 Advance
-      - matplotlib # Untuk plot confusion matrix (jika digunakan)
+      - matplotlib # Untuk plot confusion matrix (jika digunakan)d
       - seaborn # Jika digunakan untuk visualisasi (jika digunakan)
       - pydantic<2.0.0 # Tambahkan jika Anda mengalami masalah pydantic sebelumnya
       - pydantic-core # Diperlukan oleh pydantic, tapi versi spesifiknya tergantung pada pydantic

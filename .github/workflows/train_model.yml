@@ -25,30 +25,20 @@ jobs:
         auto-activate-base: false # Penting: Jangan otomatis mengaktifkan base env
         auto-update-conda: true
         environment-file: MLProject/conda.yaml # Tentukan path ke conda.yaml Anda
-        # Hapus 'activate-environment' di sini; aktivasi akan dilakukan secara manual untuk lebih robust
-        # activate-environment: personality-ml-env
+        activate-environment: personality-ml-env # Aktifkan environment setelah dibuat
+        use-mamba: true # Gunakan mamba untuk instalasi yang lebih cepat dan seringkali lebih andal
 
     - name: Run MLflow Project
-      # Gunakan login shell (-l) agar script inisialisasi Conda (dari conda init) dijalankan
+      # Gunakan login shell (-l) untuk memastikan semua path Conda tersetel.
+      # Environment 'personality-ml-env' seharusnya sudah aktif dari langkah sebelumnya.
       shell: bash -l {0}
       run: |
-        echo "Verifying Conda environment existence..."
-        # Periksa apakah environment ada sebelum mencoba mengaktifkannya
-        if ! conda info --envs | grep -q "personality-ml-env"; then
-          echo "Error: Conda environment 'personality-ml-env' not found. Please check the 'Set up Conda Environment' step for creation issues."
-          exit 1
-        fi
-        
-        echo "Activating Conda environment 'personality-ml-env'..."
-        # Aktifkan environment Conda
-        conda activate personality-ml-env
-        
-        echo "Verifying Python interpreter and mlflow module after activation..."
+        echo "Verifying Python interpreter and mlflow module in activated environment..."
         # Verifikasi path Python yang aktif
         which python
         # Verifikasi apakah modul mlflow dapat ditemukan di Python yang aktif
         python -c "import mlflow; print('mlflow module found and imported successfully!')" || \
-          { echo "Error: 'mlflow' module not found or could not be imported in the activated environment."; exit 1; }
+          { echo "Error: 'mlflow' module not found or could not be imported in the activated environment. Check conda.yaml dependencies."; exit 1; }
 
         echo "Running MLflow Project..."
         # Jalankan MLflow Project menggunakan python -m mlflow untuk robustnes
