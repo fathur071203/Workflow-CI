@@ -1,0 +1,24 @@
+name: personality-ml-env # Nama environment Conda untuk MLflow Project
+
+channels:
+  - defaults
+  - conda-forge # Tambahkan jika Anda menggunakan package dari conda-forge (misal: untuk matplotlib, seaborn)
+
+dependencies:
+  - python=3.10.16 # Sesuaikan dengan versi Python Anda yang digunakan di GitHub Actions (dan lokal)
+  - pip
+
+  # Library yang diinstal melalui pip
+  - pip:
+      - pandas
+      - numpy
+      - scikit-learn
+      - mlflow # Pastikan versi mlflow yang Anda gunakan
+      - joblib # Untuk menyimpan model
+      - dagshub # Diperlukan untuk Level Advance jika akan ke Kriteria 3 Advance
+      - matplotlib # Untuk plot confusion matrix (jika digunakan)
+      - seaborn # Jika digunakan untuk visualisasi (jika digunakan)
+      - pydantic<2.0.0 # Tambahkan jika Anda mengalami masalah pydantic sebelumnya
+      - pydantic-core # Diperlukan oleh pydantic, tapi versi spesifiknya tergantung pada pydantic
+      # Anda bisa mendapatkan daftar lengkap dengan `pip freeze > requirements.txt` di environment lokal yang bersih
+      # dan kemudian menyalinnya ke sini, menyesuaikan formatnya.

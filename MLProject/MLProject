@@ -1,0 +1,16 @@
+name: personality_prediction_ci_project # Nama proyek MLflow Anda
+
+conda_env: conda.yaml # Menunjuk ke file environment Conda yang baru Anda buat
+
+entry_points:
+  # Ini adalah 'command' yang akan dijalankan oleh MLflow Project
+  # Kita akan memanggil skrip modelling.py yang sudah kita salin
+  main:
+    command: "python modelling.py" # MLflow Project akan menjalankan modelling.py
+    # Jika skrip modelling.py Anda membutuhkan argumen (misal --data_path), Anda bisa tambahkan:
+    # command: "python modelling.py --data_path personality_preprocessing/processed_data.csv"
+    # Atau jika argumennya didefinisikan sebagai parameter di MLProject:
+    # parameters:
+    #   data_path: {type: str, default: "personality_preprocessing/processed_data.csv"}
+    # Maka command-nya menjadi: "python modelling.py --data_path {data_path}"
+    # Untuk kasus ini, karena data_path sudah disetel di dalam modelling.py, cukup "python modelling.py"

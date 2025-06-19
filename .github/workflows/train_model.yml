@@ -1,0 +1,61 @@
+name: CI - Train ML Model
+
+on:
+  push:
+    branches:
+      - main # Pastikan ini nama branch utama repositori Workflow-CI Anda (misal: 'main')
+    paths:
+      - 'MLProject/**' # Trigger jika ada perubahan di dalam folder MLProject
+      - '!MLProject/personality_preprocessing/**' # Kecualikan perubahan di data preprocessing
+
+jobs:
+  train_model_job:
+    runs-on: ubuntu-latest # Lingkungan virtual tempat job akan berjalan
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4 # Mengambil kode dari repositori
+
+    - name: Set up Conda Environment
+      # Menggunakan actions ini untuk setup Conda di GitHub Actions runner
+      uses: conda-incubator/setup-miniconda@v3 
+      with:
+        python-version: 3.10.16 # Sesuaikan dengan versi Python Anda (yang kompatibel dengan model)
+        conda-tools-version: latest
+        auto-activate-base: false # Penting: Jangan otomatis mengaktifkan base env
+        auto-update-conda: true
+        environment-file: MLProject/conda.yaml # Tentukan path ke conda.yaml Anda
+
+    - name: Run MLflow Project
+      run: |
+        conda activate personality-ml-env # Aktifkan environment yang dibuat oleh setup-miniconda (nama dari conda.yaml)
+        # Perintah untuk menjalankan MLflow Project
+        # MLflow akan menjalankan entry point 'main' yang didefinisikan di MLProject file
+        mlflow run MLProject --no-conda # --no-conda karena environment sudah diatur oleh setup-miniconda
+      env:
+        # MLFLOW_TRACKING_URI: ./mlruns akan membuat folder mlruns/ di root repo CI ini
+        # Ini adalah setup default untuk tracking lokal di runner Actions
+        MLFLOW_TRACKING_URI: ./mlruns 
+        # Jika Anda melakukan Advance (dengan DagsHub), Anda perlu menambahkan ini:
+        # MLFLOW_TRACKING_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+        # MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
+
+
+    - name: Configure Git for Commit MLflow Runs
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions"
+
+    - name: Commit MLflow Local Runs (untuk Kriteria 3 Basic/Skilled, menyimpan artefak di GitHub)
+      # Ini akan meng-commit folder mlruns yang berisi hasil tracking
+      run: |
+        # Periksa apakah ada perubahan di folder mlruns sebelum di-add/commit
+        if git diff --exit-code --quiet mlruns/; then
+          echo "No new MLflow runs or changes to commit."
+        else
+          git add mlruns/
+          git commit -m "chore: MLflow local runs from CI workflow"
+          git push origin master # Sesuaikan dengan branch utama Anda
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token otomatis dari GitHub Actions
