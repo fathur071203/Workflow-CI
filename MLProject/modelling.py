@@ -63,43 +63,45 @@ def train_model_tuned(data_path):
     logging.info(f"Skor F1 terbaik dari Cross-Validation: {grid_search.best_score_:.4f}")
 
     # --- MLflow Manual Logging ---
-    # Mulai MLflow Run
-    with mlflow.start_run(run_name="Random_Forest_Tuning_Manual_Log"):
-        # Log parameter terbaik secara manual
-        mlflow.log_params(grid_search.best_params_)
-        logging.info("Hyperparameter terbaik dicatat secara manual ke MLflow.")
+    # Ketika skrip dijalankan dengan 'mlflow run', sebuah MLflow Run sudah aktif.
+    # Tidak perlu memanggil mlflow.start_run() di sini.
+    # Semua log akan otomatis masuk ke run yang sudah ada.
 
-        # Prediksi pada data uji dengan model terbaik
-        y_pred = best_model.predict(X_test)
+    # Log parameter terbaik secara manual
+    mlflow.log_params(grid_search.best_params_)
+    logging.info("Hyperparameter terbaik dicatat secara manual ke MLflow.")
 
-        # Hitung dan catat metrik evaluasi secara manual (metrik yang sama dengan autolog)
-        accuracy = accuracy_score(y_test, y_pred)
-        precision = precision_score(y_test, y_pred, average='weighted', zero_division=0)
-        recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
-        f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
+    # Prediksi pada data uji dengan model terbaik
+    y_pred = best_model.predict(X_test)
 
-        mlflow.log_metric("test_accuracy", accuracy)
-        mlflow.log_metric("test_precision", precision)
-        mlflow.log_metric("test_recall", recall)
-        mlflow.log_metric("test_f1_score", f1)
-        logging.info(f"Metrik pengujian dicatat secara manual: Akurasi={accuracy:.4f}, F1-Score={f1:.4f}")
+    # Hitung dan catat metrik evaluasi secara manual (metrik yang sama dengan autolog)
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, average='weighted', zero_division=0)
+    recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
+    f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
 
-        # Catat classification report sebagai artefak tambahan (opsional tapi disarankan)
-        report_dict = classification_report(y_test, y_pred, output_dict=True)
-        report_filepath = "classification_report.json"
-        with open(report_filepath, "w") as f:
-            json.dump(report_dict, f, indent=4)
-        mlflow.log_artifact(report_filepath)
-        os.remove(report_filepath) # Hapus file lokal setelah diunggah
-        logging.info("Laporan klasifikasi dicatat sebagai artefak.")
-        
-        # Simpan model terbaik sebagai artefak secara manual
-        mlflow.sklearn.log_model(best_model, "best_random_forest_model_tuned")
-        logging.info("Model terbaik yang telah di-tuning dicatat sebagai artefak.")
+    mlflow.log_metric("test_accuracy", accuracy)
+    mlflow.log_metric("test_precision", precision)
+    mlflow.log_metric("test_recall", recall)
+    mlflow.log_metric("test_f1_score", f1)
+    logging.info(f"Metrik pengujian dicatat secara manual: Akurasi={accuracy:.4f}, F1-Score={f1:.4f}")
 
-    logging.info("MLflow run untuk model yang di-tuning selesai.")
+    # Catat classification report sebagai artefak tambahan (opsional tapi disarankan)
+    report_dict = classification_report(y_test, y_pred, output_dict=True)
+    report_filepath = "classification_report.json"
+    with open(report_filepath, "w") as f:
+        json.dump(report_dict, f, indent=4)
+    mlflow.log_artifact(report_filepath)
+    os.remove(report_filepath) # Hapus file lokal setelah diunggah
+    logging.info("Laporan klasifikasi dicatat sebagai artefak.")
+    
+    # Simpan model terbaik sebagai artefak secara manual
+    mlflow.sklearn.log_model(best_model, "best_random_forest_model_tuned")
+    logging.info("Model terbaik yang telah di-tuning dicatat sebagai artefak.")
+
+    logging.info("MLflow logging selesai untuk model yang di-tuning.")
 
 if __name__ == "__main__":
     # Path ke data yang sudah diproses (relatif dari lokasi skrip modelling.py)
-    PROCESSED_DATA_PATH = 'personality_preprocessing/processed_data.csv' # Hapus `../` di awal jika ada
+    PROCESSED_DATA_PATH = 'personality_preprocessing/processed_data.csv'
     train_model_tuned(PROCESSED_DATA_PATH)
