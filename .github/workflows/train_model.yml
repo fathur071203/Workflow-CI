@@ -24,11 +24,16 @@ jobs:
         auto-activate-base: false
         auto-update-conda: true
         environment-file: MLProject/conda.yaml
-        activate-environment: personality-ml-env # This will automatically activate the environment
+        # No need for 'activate-environment' here as we'll activate manually in the next step
+        # activate-environment: personality-ml-env
 
     - name: Run MLflow Project
       run: |
-        # Use 'python -m mlflow' to explicitly run the mlflow module
+        # Initialize Conda in the current shell session
+        source $(conda info --base)/etc/profile.d/conda.sh
+        # Activate the specific Conda environment
+        conda activate personality-ml-env
+        # Now run mlflow using the activated environment's python
         python -m mlflow run MLProject --no-conda
       env:
         MLFLOW_TRACKING_URI: ./mlruns
@@ -43,7 +48,6 @@ jobs:
 
     - name: Commit MLflow Local Runs (untuk Kriteria 3 Basic/Skilled, menyimpan artefak di GitHub)
       run: |
-        # Periksa apakah ada perubahan di folder mlruns sebelum di-add/commit
         if git diff --exit-code --quiet mlruns/; then
           echo "No new MLflow runs or changes to commit."
         else
