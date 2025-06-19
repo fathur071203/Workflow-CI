@@ -19,6 +19,6 @@ dependencies:
       - matplotlib # Untuk plot confusion matrix (jika digunakan)
       - seaborn # Jika digunakan untuk visualisasi (jika digunakan)d
       - pydantic<2.0.0 # Tambahkan jika Anda mengalami masalah pydantic sebelumnya
-      - pydantic-core # Diperlukan oleh pydantic, tapi versi spesifiknya tergantung pada pydantic
+      - pydantic-core # Diperlukan oleh pydantic, tapi versi spesifdiknya tergantung pada pydantic
       # Anda bisa mendapatkan daftar lengkap dengan `pip freeze > requirements.txt` di environment lokal yang bersih
       # dan kemudian menyalinnya ke sini,ss menyesuasikans formatnya.
