@@ -14,7 +14,7 @@ dependencies:
       - numpy
       - scikit-learn
       - mlflow # Pastikan versi mlflow yang Anda gunakan
-      - joblib # Untuk menyimpan models
+      - joblib # Untuk menyimpan modelsd
       - dagshub # Diperlukan untuk Level Advance jika akan ke Kriteria 3 Advance
       - matplotlib # Untuk plot confusion matrix (jika digunakan)d
       - seaborn # Jika digunakan untuk visualisasi (jika digunakan)

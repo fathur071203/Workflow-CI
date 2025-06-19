@@ -41,8 +41,10 @@ jobs:
           { echo "Error: 'mlflow' module not found or could not be imported in the activated environment. Check conda.yaml dependencies."; exit 1; }
 
         echo "Running MLflow Project..."
-        # Jalankan MLflow Project menggunakan python -m mlflow untuk robustnes
-        python -m mlflow run MLProject --no-conda
+        # Jalankan MLflow Project menggunakan python -m mlflow untuk robustnes.
+        # Menghapus '--no-conda' karena MLflow 2.x mungkin tidak mendukungnya,
+        # dan lingkungan sudah diaktifkan oleh setup-miniconda.
+        python -m mlflow run MLProject
       env:
         # MLFLOW_TRACKING_URI: ./mlruns akan membuat folder mlruns/ di root repo CI ini
         # Ini adalah setup default untuk tracking lokal di runner Actions
