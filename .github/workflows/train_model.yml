@@ -24,15 +24,15 @@ jobs:
         auto-activate-base: false
         auto-update-conda: true
         environment-file: MLProject/conda.yaml
-        # Add this line to initialize Conda for the runner's shell
         activate-environment: personality-ml-env # This will automatically activate the environment
 
     - name: Run MLflow Project
       run: |
-        # No need for 'conda activate personality-ml-env' here if 'activate-environment' is used above
-        mlflow run MLProject --no-conda
+        # Use 'python -m mlflow' to explicitly run the mlflow module
+        python -m mlflow run MLProject --no-conda
       env:
         MLFLOW_TRACKING_URI: ./mlruns
+        # If you are using DagsHub, uncomment these lines:
         # MLFLOW_TRACKING_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
         # MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
 
@@ -43,12 +43,13 @@ jobs:
 
     - name: Commit MLflow Local Runs (untuk Kriteria 3 Basic/Skilled, menyimpan artefak di GitHub)
       run: |
+        # Periksa apakah ada perubahan di folder mlruns sebelum di-add/commit
         if git diff --exit-code --quiet mlruns/; then
           echo "No new MLflow runs or changes to commit."
         else
           git add mlruns/
           git commit -m "chore: MLflow local runs from CI workflow"
-          git push origin master
+          git push origin master # Sesuaikan dengan branch utama Anda
         fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
