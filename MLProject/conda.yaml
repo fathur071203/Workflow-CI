@@ -17,7 +17,7 @@ dependencies:
       - joblib # Untuk menyimpan models
       - dagshub # Diperlukan untuk Level Advance jika akan ke Kriteria 3 Advance
       - matplotlib # Untuk plot confusion matrix (jika digunakan)
-      - seaborn # Jika digunakan untuk visualisasi (jika digunakan)
+      - seaborn # Jika digunakan untuk visualisasi (jika digunakan)d
       - pydantic<2.0.0 # Tambahkan jika Anda mengalami masalah pydantic sebelumnya
       - pydantic-core # Diperlukan oleh pydantic, tapi versi spesifiknya tergantung pada pydantic
       # Anda bisa mendapatkan daftar lengkap dengan `pip freeze > requirements.txt` di environment lokal yang bersih
