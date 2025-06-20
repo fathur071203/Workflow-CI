@@ -19,7 +19,7 @@ jobs:
     - name: Set up Conda Environment (and activate globally)
       uses: conda-incubator/setup-miniconda@v3 
       with:
-        python-version: 3.10 # Pastikan versi Python ini sesuai
+        python-version: 3.10.16 # Pastikan versi Python ini sesuai
         auto-activate-base: false
         auto-update-conda: true
         environment-file: MLProject/conda.yaml
